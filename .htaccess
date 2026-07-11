@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Root of the subdomain (dukan.techway.tech or dukan.techway.tech/) goes straight to the login page
+    # Root of the subdomain (amlac.techway.tech or amlac.techway.tech/) goes straight to the login page
     RewriteCond %{REQUEST_URI} ^/?$
     RewriteRule ^$ public/login [L]
 
