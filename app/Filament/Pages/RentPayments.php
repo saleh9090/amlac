@@ -105,6 +105,7 @@ class RentPayments extends Page implements HasTable
                 Action::make('saveAll')
                     ->label('Save All')
                     ->icon('heroicon-o-check')
+                    ->visible(fn (): bool => ! auth()->user()?->is_read_only)
                     ->action('saveAll'),
             ])
             ->columns([
@@ -125,6 +126,7 @@ class RentPayments extends Page implements HasTable
                     ->label('Paid')
                     ->type('number')
                     ->step('0.01')
+                    ->disabled(fn (): bool => (bool) auth()->user()?->is_read_only)
                     ->getStateUsing(fn (Unit $record) => (float) ($record->payments->first()?->paid_amount ?? 0))
                     ->updateStateUsing(fn (Unit $record, $state) => $this->savePaymentField($record, 'paid_amount', $state))
                     ->extraInputAttributes(function (Unit $record): array {
@@ -150,6 +152,7 @@ class RentPayments extends Page implements HasTable
 
                 TextInputColumn::make('note')
                     ->label('Note')
+                    ->disabled(fn (): bool => (bool) auth()->user()?->is_read_only)
                     ->getStateUsing(fn (Unit $record) => $record->payments->first()?->note)
                     ->updateStateUsing(fn (Unit $record, $state) => $this->savePaymentField($record, 'note', $state ?: null)),
             ]);
@@ -185,6 +188,8 @@ class RentPayments extends Page implements HasTable
 
     protected function savePaymentField(Unit $unit, string $field, mixed $value): void
     {
+        abort_if(auth()->user()?->is_read_only, 403);
+
         $payment = Payment::firstOrNew([
             'unit_id' => $unit->id,
             'payment_for_month' => $this->month,
@@ -216,6 +221,8 @@ class RentPayments extends Page implements HasTable
      */
     public function saveAll(): void
     {
+        abort_if(auth()->user()?->is_read_only, 403);
+
         $units = Unit::query()
             ->when($this->buildingId, fn (Builder $query) => $query->where('building_id', $this->buildingId))
             ->get();
