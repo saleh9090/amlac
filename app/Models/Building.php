@@ -25,4 +25,9 @@ class Building extends Model
     {
         return $this->hasMany(Expense::class);
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
 }
