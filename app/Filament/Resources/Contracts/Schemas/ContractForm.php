@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Contracts\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -65,6 +66,13 @@ class ContractForm
                     ->default('active')
                     ->helperText('Calculated automatically: Active until the end date expires, then Inactive.'),
                 Textarea::make('notes')
+                    ->columnSpanFull(),
+                FileUpload::make('contract_image')
+                    ->label('Contract PDF')
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->disk('public')
+                    ->directory('contracts')
+                    ->maxFiles(1)
                     ->columnSpanFull(),
             ]);
     }

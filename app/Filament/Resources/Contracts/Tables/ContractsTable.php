@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\Contracts\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 
 class ContractsTable
 {
@@ -69,6 +72,15 @@ class ContractsTable
                 //
             ])
             ->recordActions([
+                Action::make('viewContract')
+                    ->label('View PDF')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->color('gray')
+                    ->iconButton()
+                    ->tooltip('View PDF')
+                    ->url(fn ($record): ?string => $record->contract_image ? Storage::disk('public')->url($record->contract_image) : null)
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record): bool => filled($record->contract_image)),
                 EditAction::make(),
             ])
             ->toolbarActions([

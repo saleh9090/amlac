@@ -23,6 +23,7 @@ class Contract extends Model
         'payment_method',
         'status',
         'notes',
+        'contract_image',
     ];
 
     protected $casts = [
