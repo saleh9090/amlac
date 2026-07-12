@@ -1,7 +1,7 @@
 @php
     $record = $getRecord();
     $state = $getState();
-    $isReadOnly = auth()->user()?->is_read_only;
+    $isReadOnly = ! (auth()->user()?->isAdmin() ?? false);
 @endphp
 
 <input

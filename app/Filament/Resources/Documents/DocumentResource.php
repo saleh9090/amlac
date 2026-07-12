@@ -8,11 +8,13 @@ use App\Filament\Resources\Documents\Pages\ListDocuments;
 use App\Filament\Resources\Documents\Schemas\DocumentForm;
 use App\Filament\Resources\Documents\Tables\DocumentsTable;
 use App\Models\Document;
+use App\Support\BuildingAccess;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class DocumentResource extends Resource
@@ -24,6 +26,12 @@ class DocumentResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Building';
 
     protected static ?int $navigationSort = 5;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereIn('building_id', BuildingAccess::allowedBuildingIds());
+    }
 
     public static function form(Schema $schema): Schema
     {

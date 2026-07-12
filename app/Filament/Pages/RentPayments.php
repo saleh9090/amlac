@@ -41,12 +41,15 @@ class RentPayments extends Page implements HasTable
         $this->month = (int) now()->month;
         $this->year = (int) now()->year;
 
+        $allowedIds = $this->allowedBuildingIds();
+
         // Default to AlGobrah instead of "All Buildings", so the page
         // opens already scoped to one building's units.
         $this->buildingId = Building::query()
+            ->whereIn('id', $allowedIds)
             ->where('name', 'AlGobrah')
             ->value('id')
-            ?? Building::query()->orderBy('name')->value('id');
+            ?? Building::query()->whereIn('id', $allowedIds)->orderBy('name')->value('id');
     }
 
     /**
@@ -55,9 +58,27 @@ class RentPayments extends Page implements HasTable
     public function getBuildingOptions(): array
     {
         return Building::query()
+            ->whereIn('id', $this->allowedBuildingIds())
             ->orderBy('name')
             ->pluck('name', 'id')
             ->all();
+    }
+
+    /**
+     * Users with the "user" role only see the building(s) assigned to
+     * them; admins see everything regardless of assignment.
+     *
+     * @return array<int, int>
+     */
+    protected function allowedBuildingIds(): array
+    {
+        $user = auth()->user();
+
+        if (! $user || $user->isAdmin()) {
+            return Building::query()->pluck('id')->all();
+        }
+
+        return $user->buildings()->pluck('buildings.id')->all();
     }
 
     /**
@@ -90,6 +111,7 @@ class RentPayments extends Page implements HasTable
         return $table
             ->query(
                 Unit::query()
+                    ->whereIn('building_id', $this->allowedBuildingIds())
                     ->when($this->buildingId, fn (Builder $query) => $query->where('building_id', $this->buildingId))
                     ->with([
                         'contract.tenant',
@@ -105,7 +127,7 @@ class RentPayments extends Page implements HasTable
                 Action::make('saveAll')
                     ->label('Save All')
                     ->icon('heroicon-o-check')
-                    ->visible(fn (): bool => ! auth()->user()?->is_read_only)
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false)
                     ->action('saveAll'),
             ])
             ->columns([
@@ -126,7 +148,7 @@ class RentPayments extends Page implements HasTable
                     ->label('Paid')
                     ->type('number')
                     ->step('0.01')
-                    ->disabled(fn (): bool => (bool) auth()->user()?->is_read_only)
+                    ->disabled(fn (): bool => ! (auth()->user()?->isAdmin() ?? false))
                     ->getStateUsing(fn (Unit $record) => (float) ($record->payments->first()?->paid_amount ?? 0))
                     ->updateStateUsing(fn (Unit $record, $state) => $this->savePaymentField($record, 'paid_amount', $state))
                     ->extraInputAttributes(function (Unit $record): array {
@@ -152,7 +174,7 @@ class RentPayments extends Page implements HasTable
 
                 TextInputColumn::make('note')
                     ->label('Note')
-                    ->disabled(fn (): bool => (bool) auth()->user()?->is_read_only)
+                    ->disabled(fn (): bool => ! (auth()->user()?->isAdmin() ?? false))
                     ->getStateUsing(fn (Unit $record) => $record->payments->first()?->note)
                     ->updateStateUsing(fn (Unit $record, $state) => $this->savePaymentField($record, 'note', $state ?: null)),
             ]);
@@ -167,6 +189,7 @@ class RentPayments extends Page implements HasTable
     public function getTotals(): array
     {
         $units = Unit::query()
+            ->whereIn('building_id', $this->allowedBuildingIds())
             ->when($this->buildingId, fn (Builder $query) => $query->where('building_id', $this->buildingId))
             ->with([
                 'contract',
@@ -188,7 +211,7 @@ class RentPayments extends Page implements HasTable
 
     protected function savePaymentField(Unit $unit, string $field, mixed $value): void
     {
-        abort_if(auth()->user()?->is_read_only, 403);
+        abort_if(! (auth()->user()?->isAdmin() ?? false), 403);
 
         $payment = Payment::firstOrNew([
             'unit_id' => $unit->id,
@@ -221,9 +244,10 @@ class RentPayments extends Page implements HasTable
      */
     public function saveAll(): void
     {
-        abort_if(auth()->user()?->is_read_only, 403);
+        abort_if(! (auth()->user()?->isAdmin() ?? false), 403);
 
         $units = Unit::query()
+            ->whereIn('building_id', $this->allowedBuildingIds())
             ->when($this->buildingId, fn (Builder $query) => $query->where('building_id', $this->buildingId))
             ->get();
 

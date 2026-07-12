@@ -8,11 +8,13 @@ use App\Filament\Resources\Incomes\Pages\ListIncomes;
 use App\Filament\Resources\Incomes\Schemas\IncomeForm;
 use App\Filament\Resources\Incomes\Tables\IncomesTable;
 use App\Models\Income;
+use App\Support\BuildingAccess;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class IncomeResource extends Resource
@@ -24,6 +26,12 @@ class IncomeResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Income';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereIn('building_id', BuildingAccess::allowedBuildingIds());
+    }
 
     public static function form(Schema $schema): Schema
     {

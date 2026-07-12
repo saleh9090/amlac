@@ -8,11 +8,13 @@ use App\Filament\Resources\Expenses\Pages\ListExpenses;
 use App\Filament\Resources\Expenses\Schemas\ExpenseForm;
 use App\Filament\Resources\Expenses\Tables\ExpensesTable;
 use App\Models\Expense;
+use App\Support\BuildingAccess;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class ExpenseResource extends Resource
@@ -24,6 +26,12 @@ class ExpenseResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Expenses';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereIn('building_id', BuildingAccess::allowedBuildingIds());
+    }
 
     public static function form(Schema $schema): Schema
     {

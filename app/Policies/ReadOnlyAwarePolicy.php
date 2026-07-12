@@ -19,51 +19,51 @@ class ReadOnlyAwarePolicy
 
     public function create(User $user): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function update(User $user, Model $record): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function delete(User $user, Model $record): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function deleteAny(User $user): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function forceDelete(User $user, Model $record): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function forceDeleteAny(User $user): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function restore(User $user, Model $record): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function restoreAny(User $user): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function replicate(User $user, Model $record): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 
     public function reorder(User $user): bool
     {
-        return ! $user->is_read_only;
+        return $user->isAdmin();
     }
 }

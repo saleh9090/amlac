@@ -70,7 +70,7 @@ class ContractForm
                 FileUpload::make('contract_image')
                     ->label('Contract PDF')
                     ->acceptedFileTypes(['application/pdf'])
-                    ->disk('public')
+                    ->disk('local')
                     ->directory('contracts')
                     ->maxFiles(1)
                     ->columnSpanFull(),

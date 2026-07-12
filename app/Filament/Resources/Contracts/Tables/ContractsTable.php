@@ -9,7 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 class ContractsTable
 {
@@ -73,12 +72,12 @@ class ContractsTable
             ])
             ->recordActions([
                 Action::make('viewContract')
-                    ->label('View PDF')
+                    ->label('Download PDF')
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->color('gray')
                     ->iconButton()
-                    ->tooltip('View PDF')
-                    ->url(fn ($record): ?string => $record->contract_image ? Storage::disk('public')->url($record->contract_image) : null)
+                    ->tooltip('Download PDF')
+                    ->url(fn ($record): string => route('contracts.download', $record))
                     ->openUrlInNewTab()
                     ->visible(fn ($record): bool => filled($record->contract_image)),
                 EditAction::make(),

@@ -24,6 +24,14 @@ class UsersTable
                     ->label('Email address')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('role')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => $state === 'admin' ? 'Admin' : 'User')
+                    ->color(fn (string $state): string => $state === 'admin' ? 'success' : 'gray'),
+                TextColumn::make('buildings.name')
+                    ->label('Buildings')
+                    ->badge()
+                    ->separator(','),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

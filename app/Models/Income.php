@@ -11,6 +11,7 @@ class Income extends Model
     use HasFactory;
 
     protected $fillable = [
+        'building_id',
         'date',
         'amount',
         'income_category_id',
@@ -36,5 +37,10 @@ class Income extends Model
     public function incomeCategory(): BelongsTo
     {
         return $this->belongsTo(IncomeCategory::class);
+    }
+
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
     }
 }

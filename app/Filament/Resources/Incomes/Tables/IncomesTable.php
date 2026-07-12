@@ -21,6 +21,10 @@ class IncomesTable
         return $table
             ->defaultSort('date', 'asc')
             ->columns([
+                TextColumn::make('building.name')
+                    ->label('Building')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('date')
                     ->date()
                     ->sortable(),

@@ -9,7 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 class DocumentsTable
 {
@@ -36,10 +35,8 @@ class DocumentsTable
                     ->color('gray')
                     ->iconButton()
                     ->tooltip('Download PDF')
-                    ->action(fn ($record) => response()->download(
-                        Storage::disk('local')->path($record->file_path),
-                        $record->name.'.pdf',
-                    )),
+                    ->url(fn ($record): string => route('documents.download', $record))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Incomes\Schemas;
 
+use App\Models\Building;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +15,11 @@ class IncomeForm
     {
         return $schema
             ->components([
+                Select::make('building_id')
+                    ->label('Building')
+                    ->relationship('building', 'name')
+                    ->default(fn (): ?int => Building::query()->where('name', 'AlGobrah')->value('id'))
+                    ->required(),
                 DatePicker::make('date')
                     ->required()
                     ->default(now()),
