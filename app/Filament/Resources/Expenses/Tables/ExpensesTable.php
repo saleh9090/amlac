@@ -19,7 +19,7 @@ class ExpensesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('expense_date', 'asc')
+            ->defaultSort('expense_date', 'desc')
             ->columns([
                 TextColumn::make('building.name')
                     ->searchable(),

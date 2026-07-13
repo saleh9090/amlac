@@ -19,7 +19,7 @@ class IncomesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('date', 'asc')
+            ->defaultSort('date', 'desc')
             ->columns([
                 TextColumn::make('building.name')
                     ->label('Building')
