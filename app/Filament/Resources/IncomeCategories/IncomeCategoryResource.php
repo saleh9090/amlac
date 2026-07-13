@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\IncomeCategories;
 
+use App\Filament\Concerns\RestrictedToAdmins;
 use App\Filament\Resources\IncomeCategories\Pages\CreateIncomeCategory;
 use App\Filament\Resources\IncomeCategories\Pages\EditIncomeCategory;
 use App\Filament\Resources\IncomeCategories\Pages\ListIncomeCategories;
@@ -17,6 +18,8 @@ use UnitEnum;
 
 class IncomeCategoryResource extends Resource
 {
+    use RestrictedToAdmins;
+
     protected static ?string $model = IncomeCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;

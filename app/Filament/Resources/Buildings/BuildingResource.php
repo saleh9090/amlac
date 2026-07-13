@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Buildings;
 
+use App\Filament\Concerns\RestrictedToAdmins;
 use App\Filament\Resources\Buildings\Pages\CreateBuilding;
 use App\Filament\Resources\Buildings\Pages\EditBuilding;
 use App\Filament\Resources\Buildings\Pages\ListBuildings;
@@ -19,6 +20,8 @@ use UnitEnum;
 
 class BuildingResource extends Resource
 {
+    use RestrictedToAdmins;
+
     protected static ?string $model = Building::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
