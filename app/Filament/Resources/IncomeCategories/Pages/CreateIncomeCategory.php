@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateIncomeCategory extends CreateRecord
 {
     protected static string $resource = IncomeCategoryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
